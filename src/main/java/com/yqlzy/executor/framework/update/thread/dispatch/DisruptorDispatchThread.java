@@ -56,6 +56,7 @@ public class DisruptorDispatchThread extends DispatchThread {
         running = false;
     }
 
+    @Override
     public void addEvent(IEvent event, EventType eventType) {
         putEvent(event);
     }
@@ -81,5 +82,20 @@ public class DisruptorDispatchThread extends DispatchThread {
 
     public void setRingBuffer(RingBuffer<CycleEvent> ringBuffer) {
         this.ringBuffer = ringBuffer;
+    }
+
+    @Override
+    public void unpark() {
+
+    }
+
+    @Override
+    void park() {
+
+    }
+
+    @Override
+    public IUpdateExecutor getiUpdateExecutor() {
+        return this.disruptorExecutorService;
     }
 }

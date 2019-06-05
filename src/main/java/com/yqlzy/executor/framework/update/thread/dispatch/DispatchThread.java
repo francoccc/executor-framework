@@ -1,6 +1,8 @@
 package com.yqlzy.executor.framework.update.thread.dispatch;
 
 import com.yqlzy.executor.framework.event.EventBus;
+import com.yqlzy.executor.framework.event.EventType;
+import com.yqlzy.executor.framework.event.common.IEvent;
 import com.yqlzy.executor.framework.update.pool.IUpdateExecutor;
 
 
@@ -37,4 +39,9 @@ public abstract class DispatchThread extends Thread {
      * 启动
      */
     abstract public void startup();
+
+    abstract public void addEvent(IEvent event, EventType eventType);
+    abstract public void unpark();
+    abstract void park();
+    abstract public IUpdateExecutor getiUpdateExecutor();
 }

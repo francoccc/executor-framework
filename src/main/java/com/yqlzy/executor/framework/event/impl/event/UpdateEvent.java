@@ -8,6 +8,10 @@ import java.io.Serializable;
 
 public class UpdateEvent<ID extends Serializable> extends CycleEvent {
 
+    public UpdateEvent(){
+
+    }
+
     public UpdateEvent(EventType eventType, ID eventId, EventParam... params) {
         super(eventType, eventId, params);
         setUpdateAlive(true);

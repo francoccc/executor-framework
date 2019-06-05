@@ -93,15 +93,53 @@ public class TestDisruptor {
         }
     }
 
+    public static RingBuffer<MessageEvent> ringBuffer;
 
     public static void main(String[] args) {
-        String message = "Hello Disruptor!";
+        final String message = "Hello Thread-";
         int ringBufferSize = 1024;//必须是2的N次方
-        Disruptor<MessageEvent> disruptor = new Disruptor<MessageEvent>(new MessageEventFactory(),ringBufferSize,new MessageThreadFactory(), ProducerType.SINGLE,new BlockingWaitStrategy());
+        Disruptor<MessageEvent> disruptor = new Disruptor<MessageEvent>(new MessageEventFactory()
+                , ringBufferSize
+                , new MessageThreadFactory()
+                , ProducerType.MULTI
+                , new BlockingWaitStrategy());
         disruptor.handleEventsWith(new MessageEventHandler());
         disruptor.setDefaultExceptionHandler(new MessageExceptionHandler());
-        RingBuffer<MessageEvent> ringBuffer = disruptor.start();
-        MessageEventProducer producer = new MessageEventProducer(ringBuffer);
-        producer.onData(message);
+        ringBuffer = disruptor.start();
+        final int num = 5;
+        Thread[] threads = new Thread[num + 1];
+        for(int i = 0; i < num; i++) {
+            threads[i] = new Thread(new Runnable() {
+
+                private MessageEventProducer producer;
+
+                @Override
+                public void run() {
+                    String _message = "Hello," + Thread.currentThread().getName();
+                    producer = new MessageEventProducer(ringBuffer);
+                    for(int i = 1; i <= 100; i++) {
+                        producer.onData(_message + "-" + i);
+                    }
+                }
+            }, "thread-" + i);
+        }
+
+        threads[num] = new Thread(new Runnable() {
+
+            private MessageEventProducer producer;
+
+            @Override
+            public void run() {
+                String _message = "Hello," + Thread.currentThread().getName();
+                producer = new MessageEventProducer(ringBuffer);
+                int i = 0;
+                while(true) {
+                    producer.onData(_message + "-" + ++i);
+                }
+            }
+        }, "thread-" + num);
+        for(int i = 0; i <= num; i++) {
+            threads[i].start();
+        }
     }
 }

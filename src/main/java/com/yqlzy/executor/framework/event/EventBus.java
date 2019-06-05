@@ -30,7 +30,7 @@ public class EventBus implements IEventBus {
         Set<EventType> set = listener.getSet();
         for(EventType eventType : set) {
             if(!listenerMap.containsKey(eventType)) {
-                listenerMap.put(eventType, new HashSet<>());
+                listenerMap.put(eventType, new HashSet<AbstractEventListener>());
             }
             listenerMap.get(eventType).add(listener);
         }
